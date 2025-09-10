@@ -1,359 +1,449 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>YouTube.com Clone</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-   <link rel="icon" href="icons/subscriptions.svg" type="image/png">
-
-    <link rel="stylesheet" href="styles/general.css">
-    <link rel="stylesheet" href="styles/header.css">
-    <link rel="stylesheet" href="styles/video.css">
-    <link rel="stylesheet" href="styles/sidebar.css">
-  </head>
-  <body>
-    <header class="header">
-      <div class="left-section">
-        <img class="hamburger-menu" src="icons/hamburger-menu.svg">
-        <img class="youtube-logo" src="icons/youtube-logo.svg">
-      </div>
-      <div class="middle-section">
-        <input class="search-bar" type="text" placeholder="Search">
-        <button class="search-button">
-          <img class="search-icon" src="icons/search.svg">
-          <div class="tooltip">Search</div>
-        </button>
-        <!-- Put position absolute inside position relative -->
-        <button class="voice-search-button">
-          <img class="voice-search-icon" src="icons/voice-search-icon.svg">
-          <div class="tooltip">Search with your voice</div>
-        </button>
-      </div>
-      <div class="right-section">
-        <div class="upload-icon-container">
-          <img class="upload-icon" src="icons/upload.svg">
-          <div class="tooltip">Create</div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovative Digital Business Card</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Physics-based card flipping */
+        .card-container {
+            perspective: 1500px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        /* Picture-in-Picture video */
+        .video-container {
+            position: relative;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .main-video {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .pip-video {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 120px;
+            height: 80px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 2px solid white;
+            z-index: 10;
+            cursor: move;
+        }
+        
+        /* Voice command UI */
+        .voice-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-btn.listening {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, #ff512f, #dd2476);
+        }
+        
+        .voice-commands {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            width: 250px;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .command-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        
+        .command-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 81, 47, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 81, 47, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 81, 47, 0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* General styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+        
+        .skill-bar {
+            width: 100%;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .skill-level {
+            height: 8px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #6e45e2, #88d3ce);
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #1e3c72;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="card">
+            <!-- Front of the card -->
+            <div class="card-face bg-white p-8">
+                <div class="text-center">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                         alt="Profile" class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-blue-100">
+                    <h1 class="text-3xl font-bold mt-4 text-gray-800">Alex Johnson</h1>
+                    <p class="text-blue-600 font-semibold">Senior UX Designer</p>
+                    <p class="text-gray-600 mt-2">Creating beautiful user experiences since 2015</p>
+                    
+                    <div class="video-container mt-6">
+                        <video class="main-video" controls>
+                            <source src="https://assets.codepen.io/3364143/sample.mp4" type="video/mp4">
+                        </video>
+                        <video class="pip-video" muted loop>
+                            <source src="https://assets.codepen.io/3364143/sample.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button id="flipBtn" class="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition-all">
+                            Flip to Details <i class="ml-2 fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Back of the card -->
+            <div class="card-back">
+                <h2 class="text-2xl font-bold">About Me</h2>
+                <p class="mt-4">I'm a passionate UX designer with over 8 years of experience creating intuitive and beautiful digital experiences for startups and Fortune 500 companies.</p>
+                
+                <div class="w-full mt-6">
+                    <h3 class="text-lg font-semibold mb-2">Skills</h3>
+                    <div class="skill-bar">
+                        <div class="skill-level" style="width: 90%"></div>
+                    </div>
+                    <p class="text-sm">UI/UX Design</p>
+                    
+                    <div class="skill-bar">
+                        <div class="skill-level" style="width: 85%"></div>
+                    </div>
+                    <p class="text-sm">User Research</p>
+                    
+                    <div class="skill-bar">
+                        <div class="skill-level" style="width: 75%"></div>
+                    </div>
+                    <p class="text-sm">Prototyping</p>
+                </div>
+                
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-dribbble"></i></a>
+                    <a href="#"><i class="fab fa-behance"></i></a>
+                </div>
+                
+                <button id="flipBackBtn" class="mt-6 bg-white text-blue-600 px-6 py-2 rounded-full font-medium hover:bg-gray-100 transition-all">
+                    Back to Front <i class="ml-2 fas fa-undo"></i>
+                </button>
+            </div>
         </div>
-        <div class="youtube-apps-icon-container">
-          <img class="youtube-apps-icon" src="icons/youtube-apps.svg">
-          <div class="tooltip">YouTube Apps</div>
-        </div>
-        <div class="notifications-icon-container">
-          <img class="notifications-icon" src="icons/notifications.svg">
-          <div class="notifications-count">3</div>
-          <div class="tooltip">Notifications</div>
-        </div>
-        <img class="current-user-picture" src="channel-pictures/my-channel.jpeg">
-      </div>
-    </header>
-
-    <nav class="sidebar">
-      <div class="sidebar-link">
-        <img src="icons/home.svg">
-        <div>Home</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/explore.svg">
-        <div>Explore</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/subscriptions.svg">
-        <div>Subscriptions</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/originals.svg">
-        <div>Originals</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/youtube-music.svg">
-        <div>YouTube Music</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/library.svg">
-        <div>Library</div>
-      </div>
-    </nav>
-
-    <main>
-      <section class="video-grid">
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-1.webp">
-            <div class="video-time">14:20</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-1.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Talking Tech and AI with Google CEO Sundar Pichai!
-              </p>
-              <p class="video-author">
-                Marques Brownlee
-              </p>
-              <p class="video-stats">
-                3.4M views &#183; 6 months ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-2.webp">
-            <div class="video-time">8:22</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-2.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Try Not To Laugh Challenge #9
-              </p>
-              <p class="video-author">
-                Markiplier
-              </p>
-              <p class="video-stats">
-                19M views &#183; 4 years ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-3.webp">
-            <div class="video-time">9:13</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-3.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Crazy Tik Toks Taken Moments Before DISASTER
-              </p>
-              <p class="video-author">
-                SSSniperWolf
-              </p>
-              <p class="video-stats">
-                12M views &#183; 1 year ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-4.webp">
-            <div class="video-time">22:09</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-4.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                The Simplest Math Problem No One Can Solve - Collatz Conjecture
-              </p>
-              <p class="video-author">
-                Veritasium
-              </p>
-              <p class="video-stats">
-                18M views &#183; 4 months ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-5.webp">
-            <div class="video-time">11:17</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-5.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Kadane's Algorithm to Maximum Sum Subarray Problem
-              </p>
-              <p class="video-author">
-                CS Dojo
-              </p>
-              <p class="video-stats">
-                519K views &#183; 5 years ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-6.webp">
-            <div class="video-time">19:59</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-6.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Anything You Can Fit In The Circle I’ll Pay For
-              </p>
-              <p class="video-author">
-                MrBeast
-              </p>
-              <p class="video-stats">
-                141M views &#183; 1 year ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-7.webp">
-            <div class="video-time">10:13</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-7.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Why Planes Don't Fly Over Tibet
-              </p>
-              <p class="video-author">
-                RealLifeLore
-              </p>
-              <p class="video-stats">
-                6.6M views &#183; 1 year ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-8.webp">
-            <div class="video-time">7:12</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-8.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Inside The World's Biggest Passenger Plane
-              </p>
-              <p class="video-author">
-                Tech Vision
-              </p>
-              <p class="video-stats">
-                3.7M views &#183; 10 months ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-9.webp">
-            <div class="video-time">13:17</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-9.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                The SECRET to Super Human STRENGTH
-              </p>
-              <p class="video-author">
-                ThenX
-              </p>
-              <p class="video-stats">
-                20M views &#183; 3 years ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-10.webp">
-            <div class="video-time">7:53</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-10.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                How The World's Largest Cruise Ship Makes 30,000 Meals Every Day
-              </p>
-              <p class="video-author">
-                Business Insider
-              </p>
-              <p class="video-stats">
-                14M views &#183; 1 year ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-11.webp">
-            <div class="video-time">4:10</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-11.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Dubai's Crazy Underwater Train and Other Things #Only in Dubai
-              </p>
-              <p class="video-author">
-                Destination Tips
-              </p>
-              <p class="video-stats">
-                3M views &#183; 1 year ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-12.webp">
-            <div class="video-time">4:51</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-12.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                What would happen if you didn’t drink water? - Mia Nacamulli
-              </p>
-              <p class="video-author">
-                TED-Ed
-              </p>
-              <p class="video-stats">
-                12M views &#183; 5 years ago
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  </body>
+    </div>
+    
+    <!-- Voice command button -->
+    <div class="voice-btn" id="voiceBtn">
+        <i class="fas fa-microphone text-xl"></i>
+    </div>
+    
+    <!-- Voice commands panel -->
+    <div class="voice-commands" id="voiceCommands">
+        <h3 class="font-semibold mb-2 text-gray-800">Voice Commands</h3>
+        <div class="command-item">Say "flip card" to flip the card</div>
+        <div class="command-item">Say "play video" to play the main video</div>
+        <div class="command-item">Say "pause video" to pause the video</div>
+        <div class="command-item">Say "show skills" to highlight skills</div>
+        <div class="command-item">Say "contact me" to show social links</div>
+    </div>
+    
+    <script>
+        // Physics-based card flipping
+        const card = document.querySelector('.card');
+        const flipBtn = document.getElementById('flipBtn');
+        const flipBackBtn = document.getElementById('flipBackBtn');
+        
+        flipBtn.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+        });
+        
+        flipBackBtn.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+        });
+        
+        // Picture-in-Picture video functionality
+        const mainVideo = document.querySelector('.main-video');
+        const pipVideo = document.querySelector('.pip-video');
+        
+        // Make PIP video draggable
+        pipVideo.addEventListener('loadedmetadata', () => {
+            makeDraggable(pipVideo);
+        });
+        
+        // Sync videos
+        mainVideo.addEventListener('play', () => {
+            pipVideo.play();
+        });
+        
+        mainVideo.addEventListener('pause', () => {
+            pipVideo.pause();
+        });
+        
+        mainVideo.addEventListener('seeked', () => {
+            pipVideo.currentTime = mainVideo.currentTime;
+        });
+        
+        // Voice command functionality
+        const voiceBtn = document.getElementById('voiceBtn');
+        const voiceCommands = document.getElementById('voiceCommands');
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        
+        let isListening = false;
+        
+        voiceBtn.addEventListener('click', () => {
+            if (isListening) {
+                recognition.stop();
+                voiceBtn.classList.remove('listening');
+                voiceCommands.style.display = 'none';
+            } else {
+                recognition.start();
+                voiceBtn.classList.add('listening');
+                voiceCommands.style.display = 'block';
+            }
+            isListening = !isListening;
+        });
+        
+        recognition.onresult = (event) => {
+            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            
+            if (transcript.includes('flip card')) {
+                card.classList.toggle('flipped');
+                speak("Flipping card");
+            } else if (transcript.includes('play video')) {
+                mainVideo.play();
+                speak("Playing video");
+            } else if (transcript.includes('pause video')) {
+                mainVideo.pause();
+                speak("Video paused");
+            } else if (transcript.includes('show skills')) {
+                highlightSkills();
+                speak("Showing skills");
+            } else if (transcript.includes('contact me')) {
+                highlightSocial();
+                speak("Here are my social links");
+            }
+        };
+        
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error', event.error);
+        };
+        
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        function highlightSkills() {
+            const skillBars = document.querySelectorAll('.skill-bar');
+            skillBars.forEach(bar => {
+                bar.style.transition = 'all 0.5s ease';
+                bar.style.transform = 'scale(1.05)';
+                bar.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+                
+                setTimeout(() => {
+                    bar.style.transform = 'scale(1)';
+                    bar.style.boxShadow = 'none';
+                }, 2000);
+            });
+        }
+        
+        function highlightSocial() {
+            const socialIcons = document.querySelectorAll('.social-icons a');
+            socialIcons.forEach(icon => {
+                icon.style.transition = 'all 0.5s ease';
+                icon.style.transform = 'scale(1.2) translateY(-5px)';
+                icon.style.boxShadow = '0 8px 15px rgba(0, 0, 0, 0.2)';
+                
+                setTimeout(() => {
+                    icon.style.transform = 'scale(1) translateY(0)';
+                    icon.style.boxShadow = 'none';
+                }, 2000);
+            });
+        }
+        
+        function makeDraggable(element) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+            
+            element.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                initialX = parseInt(getComputedStyle(element).left, 10) || 0;
+                initialY = parseInt(getComputedStyle(element).top, 10) || 0;
+                element.style.cursor = 'grabbing';
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                element.style.left = `${initialX + dx}px`;
+                element.style.top = `${initialY + dy}px`;
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                element.style.cursor = 'grab';
+            });
+            
+            // Touch events for mobile
+            element.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                initialX = parseInt(getComputedStyle(element).left, 10) || 0;
+                initialY = parseInt(getComputedStyle(element).top, 10) || 0;
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                
+                const dx = e.touches[0].clientX - startX;
+                const dy = e.touches[0].clientY - startY;
+                
+                element.style.left = `${initialX + dx}px`;
+                element.style.top = `${initialY + dy}px`;
+            });
+            
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        }
+    </script>
+</body>
 </html>
